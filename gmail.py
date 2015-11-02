@@ -12,8 +12,7 @@ after_date = "01-Jan-2015"
 
 def process_mailbox(M):
     """
-    Do something with emails messages in the folder.  
-    For the sake of this example, print some headers.
+    Scrap your "sent mail" folder and keep track of who you talk to.
     """
 
     rv, data = M.search(None,'SINCE', after_date,'SEEN')
@@ -26,7 +25,7 @@ def process_mailbox(M):
     #write header for a csv file
     outputfile = open('data.csv','wt')
     writer = csv.writer(outputfile)
-    writer.writerow(('sender_id','average_time','last_time','replied?','remind?')) #headers
+    writer.writerow(('receiver_id','average_time','last_time','replied?','remind?')) #headers
 
     for num in data[0].split():
         rv, data = M.fetch(num, '(RFC822)')
@@ -43,6 +42,8 @@ def process_mailbox(M):
 
         raw_date = msg['Date']
         sender_id = msg['From']
+        receiver_id = msg['To']
+
         print "title",subject
         print "sender",sender_id
         print "date",raw_date
@@ -55,7 +56,7 @@ def process_mailbox(M):
             LocalDate = local_date.strftime("%a, %d %b %Y %H:%M:%S")
 
         #write a new row into a csv
-        writer.writerow((sender_id,0,raw_date,'N','N')) #default
+        writer.writerow((receiver_id,0,raw_date,'N','N')) #default
 
 M = imaplib.IMAP4_SSL('imap.gmail.com')
 
